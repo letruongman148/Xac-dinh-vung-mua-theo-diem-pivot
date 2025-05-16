@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ứng Dụng Điểm Pivot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-6 rounded-lg">
+    <div class="container max-w-md mx-auto bg-white shadow-md rounded-lg p-8">
+        <h1 class="text-2xl font-semibold text-blue-600 text-center mb-6">Xác Định Vùng Mua Theo Điểm Pivot</h1>
+        <div class="mb-4">
+            <label for="pivot" class="block text-gray-700 text-sm font-bold mb-2">Nhập điểm Pivot:</label>
+            <input type="number" id="pivot" placeholder="Nhập giá trị pivot" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div class="mb-4">
+            <label for="price" class="block text-gray-700 text-sm font-bold mb-2">Nhập giá hiện tại:</label>
+            <input type="number" id="price" placeholder="Nhập giá hiện tại" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+
+        <div id="error-message" class="text-red-500 text-xs italic mb-4" style="display: none;">
+            Vui lòng nhập số hợp lệ cho điểm pivot và giá.
+        </div>
+
+        <div id="results" class="bg-gray-50 border-l-4 border-gray-300 text-gray-700 p-4 rounded mb-4" style="display: none;">
+            <p class="font-bold">Vùng Mua:</p>
+            <p id="buy-zone"></p>
+            <p class="font-bold mt-2">Gợi ý hành động:</p>
+            <p id="action"></p>
+            <p class="font-bold mt-2">Mức giá cắt lỗ tối đa:</p>
+            <p id="stop-loss"></p>
+        </div>
+        <button id="calculate" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Tính toán</button>
+    </div>
+
+    <script>
+        const pivotInput = document.getElementById('pivot');
+        const priceInput = document.getElementById('price');
+        const resultsDiv = document.getElementById('results');
+        const buyZoneText = document.getElementById('buy-zone');
+        const actionText = document.getElementById('action');
+        const calculateButton = document.getElementById('calculate');
+        const errorMessage = document.getElementById('error-message');
+        const stopLossText = document.getElementById('stop-loss');
+
+        function calculateBuyZoneAndAction() {
+            const pivot = parseFloat(pivotInput.value);
+            const price = parseFloat(priceInput.value);
+
+            if (isNaN(pivot) || isNaN(price)) {
+                errorMessage.style.display = "block";
+                resultsDiv.style.display = "none";
+                return;
+            }
+
+            errorMessage.style.display = "none";
+            resultsDiv.style.display = "block";
+
+            const buyZoneMin = pivot;
+            const buyZoneMaxIdeal = pivot * 1.03;
+            const buyZoneMax = pivot * 1.05;
+
+            buyZoneText.textContent = `${buyZoneMin.toFixed(2)} - ${buyZoneMax.toFixed(2)}`;
+
+            let stopLossPrice = 0;
+            if (price >= buyZoneMin && price <= buyZoneMaxIdeal) {
+                actionText.textContent = "Trong vùng mua lý tưởng: Pivot - Pivot +3%. Gợi ý: Mua vào mạnh mẽ.";
+                stopLossPrice = price * 0.92;
+            } else if (price > buyZoneMaxIdeal && price <= buyZoneMax) {
+                actionText.textContent = "Trong vùng mua cao: Pivot +3% - Pivot +5%. Gợi ý: Mua vào với tỷ trọng thấp, chờ pullback nhẹ mua tiếp nếu test thành công";
+                stopLossPrice = price * 0.92;
+            } else {
+                actionText.textContent = "Ngoài vùng mua: Giá đã vượt quá Pivot +5%. Gợi ý: Chỉ quan sát, chờ pullback test thành công hoặc nền giá mới.";
+                stopLossPrice = 0;
+            }
+            stopLossText.textContent = stopLossPrice > 0 ? stopLossPrice.toFixed(2) : "Không áp dụng";
+        }
+
+        calculateButton.addEventListener('click', calculateBuyZoneAndAction);
+    </script>
+</body>
+</html>
