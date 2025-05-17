@@ -73,10 +73,10 @@
             let stopLossPrice = 0;
             if (price >= buyZoneMin && price <= buyZoneMaxIdeal) {
                 actionText.textContent = "Trong vùng mua lý tưởng: Pivot - Pivot +3%. Gợi ý: Mua vào mạnh mẽ.";
-                stopLossPrice = price * 0.92;
+                stopLossPrice = price * 0.93;
             } else if (price > buyZoneMaxIdeal && price <= buyZoneMax) {
                 actionText.textContent = "Trong vùng mua cao: Pivot +3% - Pivot +5%. Gợi ý: Mua vào với tỷ trọng thấp, chờ pullback nhẹ mua tiếp nếu test thành công";
-                stopLossPrice = price * 0.92;
+                stopLossPrice = price * 0.93;
             } else {
                 actionText.textContent = "Ngoài vùng mua: Giá đã vượt quá Pivot +5%. Gợi ý: Chỉ quan sát, chờ pullback test thành công hoặc nền giá mới.";
                 stopLossPrice = 0;
